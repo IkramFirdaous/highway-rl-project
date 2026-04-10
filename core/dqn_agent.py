@@ -2,12 +2,15 @@ import random
 import numpy as np
 import torch
 import torch.nn as nn
-from core.dqn_model import DQN
+from core.dqn_model_cnn import DQN
 from core.replay_buffer import ReplayBuffer
 from core.config import (
     LR, GAMMA, BUFFER_SIZE, BATCH_SIZE,
     TARGET_UPDATE, OBS_SHAPE, N_ACTIONS
 )
+
+
+
 
 class DQNAgent:
     def __init__(self):
@@ -16,9 +19,9 @@ class DQNAgent:
         self.target_update   = TARGET_UPDATE
         self.n_actions       = N_ACTIONS
         self.steps           = 0
-
-        self.policy_net = DQN(OBS_SHAPE, N_ACTIONS)
-        self.target_net = DQN(OBS_SHAPE, N_ACTIONS)
+        self.device  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.policy_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
+        self.target_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
 
@@ -29,7 +32,7 @@ class DQNAgent:
         if random.random() < epsilon:
             return random.randrange(self.n_actions)
         with torch.no_grad():
-            s = torch.FloatTensor(state).unsqueeze(0)
+            s = torch.FloatTensor(state).unsqueeze(0).to(self.device)
             return self.policy_net(s).argmax(dim=1).item()
 
     def update(self):
@@ -38,11 +41,11 @@ class DQNAgent:
 
         states, actions, rewards, next_states, dones = self.buffer.sample(self.batch_size)
 
-        states_t      = torch.FloatTensor(states)
-        actions_t     = torch.LongTensor(actions)
-        rewards_t     = torch.FloatTensor(rewards)
-        next_states_t = torch.FloatTensor(next_states)
-        dones_t       = torch.FloatTensor(dones)
+        states_t      = torch.FloatTensor(states).to(self.device)
+        actions_t     = torch.LongTensor(actions).to(self.device)
+        rewards_t     = torch.FloatTensor(rewards).to(self.device)
+        next_states_t = torch.FloatTensor(next_states).to(self.device)
+        dones_t       = torch.FloatTensor(dones).to(self.device)
 
         q_values = self.policy_net(states_t).gather(1, actions_t.unsqueeze(1)).squeeze(1)
 
@@ -65,5 +68,5 @@ class DQNAgent:
         torch.save(self.policy_net.state_dict(), path)
 
     def load(self, path):
-        self.policy_net.load_state_dict(torch.load(path))
+        self.policy_net.load_state_dict(torch.load(path),map_location=self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
