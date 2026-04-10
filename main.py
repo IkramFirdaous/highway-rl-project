@@ -7,7 +7,6 @@ from core.evaluate import evaluate
 from core.env import make_env
 from core.config import EVAL_SEEDS
 
-
 def run_dqn(seeds):
     all_rewards = []
     for seed in seeds:
