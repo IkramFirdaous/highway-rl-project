@@ -1,9 +1,10 @@
 import json
+import os
 import numpy as np
 from core.env import make_env
 from core.dqn_agent import DQNAgent
 from core.config import (
-    N_EPISODES, EPS_START, EPS_END, EPS_DECAY, EVAL_SEEDS
+    N_EPISODES, EPS_START, EPS_END, EPS_DECAY
 )
 
 def train(seed=0):
@@ -41,6 +42,8 @@ def train(seed=0):
             mean_r = np.mean(episode_rewards[-50:])
             print(f"ep {ep:4d} | reward={mean_r:.3f} | eps={epsilon:.3f}")
 
+    os.makedirs("results/checkpoints", exist_ok=True)
+    os.makedirs("results/metrics", exist_ok=True)
     agent.save(f"results/checkpoints/dqn_seed{seed}.pt")
 
     metrics = {"rewards": episode_rewards, "losses": episode_losses}
