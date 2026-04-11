@@ -92,7 +92,7 @@ if __name__ == "__main__":
         checkpoint = f"results/checkpoints/dqn_seed{args.seed}.pt"
         frames = run_dqn_episode(checkpoint, render_mode, args.seed)
     else:
-        checkpoint = "results/checkpoints/sb3_dqn"
+        checkpoint = f"results/checkpoints/sb3_dqn_seed{args.seed}"
         frames = run_sb3_episode(checkpoint, render_mode, args.seed)
 
     if args.render == "video" and frames:
