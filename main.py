@@ -6,6 +6,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from core.train_dqn import train
+from core.train_ddqn import train_ddqn
 from core.train_sb3 import train_sb3
 from core.evaluate import evaluate
 from core.env import make_env
@@ -21,6 +22,15 @@ def run_dqn(seeds):
     return all_rewards
 
 
+def run_ddqn(seeds):
+    all_rewards = []
+    for seed in seeds:
+        print(f"\n=== Double-DQN training seed={seed} ===")
+        _, rewards = train_ddqn(seed=seed)
+        all_rewards.append(rewards)
+    return all_rewards
+
+
 def run_sb3(seeds):
     for seed in seeds:
         print(f"\n=== SB3 training seed={seed} ===")
@@ -28,18 +38,42 @@ def run_sb3(seeds):
 
 
 def eval_dqn(seeds):
+    from core.dqn_agent import DQNAgent
     results = {}
     for seed in seeds:
-        from core.dqn_agent import DQNAgent
+        path = f"results/checkpoints/dqn_seed{seed}.pt"
+        if not os.path.exists(path):
+            print(f"DQN seed={seed} | checkpoint not found, skipping")
+            continue
         agent = DQNAgent()
-        agent.load(f"results/checkpoints/dqn_seed{seed}.pt")
+        agent.load(path)
         agent.policy_net.eval()
         mean, std, rewards = evaluate(
             agent_fn=lambda s, a=agent: a.select_action(s, epsilon=0.0),
             env_fn=make_env,
         )
-        print(f"DQN seed={seed} | mean={mean:.3f} std={std:.3f} ({len(rewards)} runs)")
+        print(f"DQN  seed={seed} | mean={mean:.3f} std={std:.3f} ({len(rewards)} runs)")
         results[f"dqn_seed{seed}"] = {"mean": mean, "std": std, "rewards": rewards}
+    return results
+
+
+def eval_ddqn(seeds):
+    from core.ddqn_agent import DDQNAgent
+    results = {}
+    for seed in seeds:
+        path = f"results/checkpoints/ddqn_seed{seed}.pt"
+        if not os.path.exists(path):
+            print(f"DDQN seed={seed} | checkpoint not found, skipping")
+            continue
+        agent = DDQNAgent()
+        agent.load(path)
+        agent.policy_net.eval()
+        mean, std, rewards = evaluate(
+            agent_fn=lambda s, a=agent: a.select_action(s, epsilon=0.0),
+            env_fn=make_env,
+        )
+        print(f"DDQN seed={seed} | mean={mean:.3f} std={std:.3f} ({len(rewards)} runs)")
+        results[f"ddqn_seed{seed}"] = {"mean": mean, "std": std, "rewards": rewards}
     return results
 
 
@@ -49,7 +83,7 @@ def eval_sb3(seeds):
     for seed in seeds:
         path = f"results/checkpoints/sb3_dqn_seed{seed}"
         if not os.path.exists(path + ".zip"):
-            print(f"SB3 seed={seed} | checkpoint not found, skipping")
+            print(f"SB3  seed={seed} | checkpoint not found, skipping")
             continue
         model = SB3DQN.load(path)
         mean, std, rewards = evaluate(
@@ -61,45 +95,44 @@ def eval_sb3(seeds):
     return results
 
 
-def plot_training_curves(all_rewards, seeds):
+def plot_training_curves(all_rewards_dict):
     os.makedirs("results/plots", exist_ok=True)
-    plt.figure()
-    for rewards, seed in zip(all_rewards, seeds):
-        plt.plot(rewards, alpha=0.7, label=f"seed={seed}")
+    plt.figure(figsize=(10, 5))
+    styles = {"dqn": ("blue", "-"), "ddqn": ("red", "--"), "sb3": ("green", ":")}
+    for label, (rewards_list, seeds) in all_rewards_dict.items():
+        color, ls = styles.get(label, ("gray", "-"))
+        for rewards, seed in zip(rewards_list, seeds):
+            plt.plot(rewards, alpha=0.6, color=color, linestyle=ls,
+                     label=f"{label.upper()} seed={seed}")
     plt.xlabel("Episode")
     plt.ylabel("Reward")
-    plt.title("DQN training curves")
-    plt.legend()
+    plt.title("Training curves — DQN vs Double-DQN")
+    plt.legend(fontsize=8)
     plt.tight_layout()
-    plt.savefig("results/plots/dqn_training_curves.png")
+    plt.savefig("results/plots/training_curves.png")
     plt.close()
-    print("Saved: results/plots/dqn_training_curves.png")
+    print("Saved: results/plots/training_curves.png")
 
 
-def log_comparison(dqn_results, sb3_results):
+def log_comparison(all_results):
     os.makedirs("results", exist_ok=True)
-    all_results = {**dqn_results, **sb3_results}
-
-    # JSON
     log = {}
     for name, r in all_results.items():
-        log[name] = {"mean": r["mean"], "std": r["std"], "n_runs": len(r["rewards"])}
+        log[name] = {"mean": round(r["mean"], 4), "std": round(r["std"], 4),
+                     "n_runs": len(r["rewards"])}
     with open("results/comparison.json", "w") as f:
         json.dump(log, f, indent=2)
 
-    # Lisible
-    lines = ["\n=== Evaluation (50 runs) ==="]
-    lines.append(f"{'Model':<20} {'Mean':>8} {'Std':>8} {'Runs':>6}")
-    lines.append("-" * 46)
+    lines = ["\n=== Evaluation (50 runs per model) ===",
+             f"{'Model':<22} {'Mean':>8} {'Std':>8} {'Runs':>6}",
+             "-" * 48]
     for name, r in all_results.items():
-        lines.append(f"{name:<20} {r['mean']:>8.3f} {r['std']:>8.3f} {len(r['rewards']):>6}")
+        lines.append(f"{name:<22} {r['mean']:>8.3f} {r['std']:>8.3f} {len(r['rewards']):>6}")
 
-    dqn_means = [r["mean"] for k, r in all_results.items() if k.startswith("dqn")]
-    sb3_means  = [r["mean"] for k, r in all_results.items() if k.startswith("sb3")]
-    if dqn_means:
-        lines.append(f"\n{'DQN average':<20} {sum(dqn_means)/len(dqn_means):>8.3f}")
-    if sb3_means:
-        lines.append(f"{'SB3 average':<20} {sum(sb3_means)/len(sb3_means):>8.3f}")
+    for prefix, label in [("dqn_", "DQN avg"), ("ddqn_", "DDQN avg"), ("sb3_", "SB3 avg")]:
+        means = [r["mean"] for k, r in all_results.items() if k.startswith(prefix)]
+        if means:
+            lines.append(f"\n{label:<22} {sum(means)/len(means):>8.3f}")
 
     summary = "\n".join(lines)
     print(summary)
@@ -110,7 +143,7 @@ def log_comparison(dqn_results, sb3_results):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["train", "eval", "all", "sb3"], default="all")
+    parser.add_argument("--mode", choices=["train", "eval", "all", "sb3", "ddqn"], default="all")
     args = parser.parse_args()
 
     seeds = EVAL_SEEDS
@@ -118,12 +151,22 @@ if __name__ == "__main__":
     if args.mode == "sb3":
         run_sb3(seeds)
 
+    if args.mode == "ddqn":
+        ddqn_rewards = run_ddqn(seeds)
+        plot_training_curves({"ddqn": (ddqn_rewards, seeds)})
+
     if args.mode in ("train", "all"):
-        dqn_rewards = run_dqn(seeds)
-        plot_training_curves(dqn_rewards, seeds)
+        dqn_rewards  = run_dqn(seeds)
+        ddqn_rewards = run_ddqn(seeds)
         run_sb3(seeds)
+        plot_training_curves({
+            "dqn":  (dqn_rewards,  seeds),
+            "ddqn": (ddqn_rewards, seeds),
+        })
 
     if args.mode in ("eval", "all"):
-        dqn_results = eval_dqn(seeds)
-        sb3_results  = eval_sb3(seeds)
-        log_comparison(dqn_results, sb3_results)
+        all_results = {}
+        all_results.update(eval_dqn(seeds))
+        all_results.update(eval_ddqn(seeds))
+        all_results.update(eval_sb3(seeds))
+        log_comparison(all_results)
