@@ -35,14 +35,14 @@ SHARED_CORE_CONFIG = {
 
 # ─── Hyperparamètres DQN (à tuner) ───────────────────────────────────────────
 
-LR            = 1e-3
+LR            = 5e-4
 GAMMA         = 0.99
 BUFFER_SIZE   = 50_000
-BATCH_SIZE    = 64
-TARGET_UPDATE = 1000
+BATCH_SIZE    = 128
+TARGET_UPDATE = 500
 EPS_START     = 1.0
 EPS_END       = 0.05
-EPS_DECAY     = 0.995
+EPS_DECAY     = 0.99
 N_EPISODES    = 500
 
 # ─── Évaluation (partagée DQN scratch + SB3) ─────────────────────────────────
