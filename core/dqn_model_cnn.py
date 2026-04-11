@@ -12,7 +12,7 @@ class DQN(nn.Module):
     """
     def __init__(self, obs_shape, n_actions):
         super().__init__()
-        h, w = obs_shape  # (10, 5)
+        h, w = obs_shape
         self.conv = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),

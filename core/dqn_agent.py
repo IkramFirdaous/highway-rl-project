@@ -10,8 +10,6 @@ from core.config import (
 )
 
 
-
-
 class DQNAgent:
     def __init__(self):
         self.gamma           = GAMMA

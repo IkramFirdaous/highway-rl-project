@@ -79,7 +79,7 @@ def save_video(frames, path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--agent", choices=["dqn", "sb3"], default="dqn")
+    parser.add_argument("--agent", choices=["dqn", "ddqn", "sb3"], default="dqn")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--render", choices=["human", "video"], default="human")
     args = parser.parse_args()
@@ -88,8 +88,8 @@ if __name__ == "__main__":
 
     os.makedirs("results/videos", exist_ok=True)
 
-    if args.agent == "dqn":
-        checkpoint = f"results/checkpoints/dqn_seed{args.seed}.pt"
+    if args.agent in ("dqn", "ddqn"):
+        checkpoint = f"results/checkpoints/{args.agent}_seed{args.seed}.pt"
         frames = run_dqn_episode(checkpoint, render_mode, args.seed)
     else:
         checkpoint = f"results/checkpoints/sb3_dqn_seed{args.seed}"
