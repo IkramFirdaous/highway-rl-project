@@ -2,12 +2,15 @@ import random
 import numpy as np
 import torch
 import torch.nn as nn
-from core.dqn_model import DQN
+from core.dqn_model_cnn import DQN
 from core.replay_buffer import ReplayBuffer
 from core.config import (
     LR, GAMMA, BUFFER_SIZE, BATCH_SIZE,
     TARGET_UPDATE, OBS_SHAPE, N_ACTIONS
 )
+
+
+
 
 class DQNAgent:
     def __init__(self):
@@ -21,9 +24,10 @@ class DQNAgent:
         self.target_update   = TARGET_UPDATE
         self.n_actions       = N_ACTIONS
         self.steps           = 0
-
-        self.policy_net = DQN(OBS_SHAPE, N_ACTIONS)
-        self.target_net = DQN(OBS_SHAPE, N_ACTIONS)
+        self.device  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"Device: {self.device}")
+        self.policy_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
+        self.target_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
 
