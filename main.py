@@ -1,4 +1,5 @@
 import argparse
+import os
 import matplotlib.pyplot as plt
 
 from core.train_dqn import train
@@ -56,6 +57,7 @@ def plot_training_curves(all_rewards, seeds):
     plt.ylabel("Reward")
     plt.title("DQN training curves")
     plt.legend()
+    os.makedirs("results/plots", exist_ok=True)
     plt.tight_layout()
     plt.savefig("results/plots/dqn_training_curves.png")
     plt.close()
@@ -63,10 +65,13 @@ def plot_training_curves(all_rewards, seeds):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["train", "eval", "all"], default="all")
+    parser.add_argument("--mode", choices=["train", "eval", "all", "sb3"], default="all")
     args = parser.parse_args()
 
     seeds = EVAL_SEEDS
+
+    if args.mode == "sb3":
+        run_sb3()
 
     if args.mode in ("train", "all"):
         dqn_rewards = run_dqn(seeds)

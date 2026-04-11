@@ -20,6 +20,7 @@ class DQNAgent:
         self.n_actions       = N_ACTIONS
         self.steps           = 0
         self.device  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"Device: {self.device}")
         self.policy_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
         self.target_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
@@ -68,5 +69,5 @@ class DQNAgent:
         torch.save(self.policy_net.state_dict(), path)
 
     def load(self, path):
-        self.policy_net.load_state_dict(torch.load(path),map_location=self.device)
+        self.policy_net.load_state_dict(torch.load(path, map_location=self.device))
         self.target_net.load_state_dict(self.policy_net.state_dict())
