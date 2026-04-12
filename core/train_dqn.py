@@ -1,12 +1,15 @@
 import json
 import numpy as np
 from core.env import make_env
+import os
 from core.dqn_agent import DQNAgent
 from core.config import (
     N_EPISODES, EPS_START, EPS_END, EPS_DECAY, EVAL_SEEDS
 )
 
 def train(seed=0):
+    os.makedirs("results/metrics", exist_ok=True)
+    os.makedirs("results/checkpoints", exist_ok=True)
     env     = make_env(seed=seed)
     agent   = DQNAgent()
     epsilon = EPS_START

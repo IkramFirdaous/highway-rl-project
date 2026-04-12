@@ -33,22 +33,31 @@ SHARED_CORE_CONFIG = {
     "offroad_terminal": True,
 }
 
-# ─── Hyperparamètres DQN (à tuner) ───────────────────────────────────────────
+# ─── Hyperparamètres partagés (DQN scratch + SB3 utilisent les mêmes) ────────
 
-LR            = 1e-3
-GAMMA         = 0.99
+LR            = 5e-4
+GAMMA         = 0.95
 BUFFER_SIZE   = 50_000
 BATCH_SIZE    = 64
-TARGET_UPDATE = 1000
+TARGET_UPDATE = 200 # steps entre chaque sync target network
+
+# ─── Hyperparamètres DQN scratch uniquement ──────────────────────────────────
+
 EPS_START     = 1.0
 EPS_END       = 0.05
-EPS_DECAY     = 0.995
+EPS_DECAY     = 0.99  # par épisode — atteint EPS_END vers ep ~300
 N_EPISODES    = 500
+
+# ─── Hyperparamètres SB3 uniquement ──────────────────────────────────────────
+
+SB3_TIMESTEPS          = 150_000    # ~500 épisodes × 300 steps = budget équivalent DQN
+SB3_LEARNING_STARTS    = 2_000    # steps avant le premier update
+SB3_EXPLORATION_FRAC   = 0.3      # fraction des timesteps pour décroître epsilon
 
 # ─── Évaluation (partagée DQN scratch + SB3) ─────────────────────────────────
 
 EVAL_EPISODES = 50
-EVAL_SEEDS    = [42, 43, 44]
+EVAL_SEEDS    = [44]
 
 # ─── Dérivé de la config  ─────────────────
 
