@@ -1,0 +1,17 @@
+{
+  "dqn_seed44": {
+    "mean": 21.641,
+    "std": 0.0,
+    "n_runs": 50
+  },
+  "ddqn_seed44": {
+    "mean": 20.9318,
+    "std": 0.0,
+    "n_runs": 50
+  },
+  "sb3_seed44": {
+    "mean": 17.9497,
+    "std": 0.0,
+    "n_runs": 50
+  }
+}

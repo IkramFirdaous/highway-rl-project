@@ -1,0 +1,13 @@
+
+=== Evaluation (50 runs per model) ===
+Model                      Mean      Std   Runs
+------------------------------------------------
+dqn_seed44               21.641    0.000     50
+ddqn_seed44              20.932    0.000     50
+sb3_seed44               17.950    0.000     50
+
+DQN avg                  21.641
+
+DDQN avg                 20.932
+
+SB3 avg                  17.950
