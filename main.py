@@ -144,9 +144,10 @@ def log_comparison(all_results):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["train", "eval", "all", "sb3", "ddqn"], default="all")
+    parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args()
 
-    seeds = EVAL_SEEDS
+    seeds = [args.seed] if args.seed is not None else EVAL_SEEDS
 
     if args.mode == "sb3":
         run_sb3(seeds)
