@@ -46,11 +46,11 @@ TARGET_UPDATE = 500   # steps entre chaque sync target network
 EPS_START     = 1.0
 EPS_END       = 0.05
 EPS_DECAY     = 0.99  # par épisode — atteint EPS_END vers ep ~300
-N_EPISODES    = 500
+N_EPISODES    = 2000
 
 # ─── Hyperparamètres SB3 uniquement ──────────────────────────────────────────
 
-SB3_TIMESTEPS          = 15_000   # ~500 épisodes × 30 steps = budget équivalent DQN
+SB3_TIMESTEPS          = 40_000   # ~500 épisodes × 30 steps = budget équivalent DQN
 SB3_LEARNING_STARTS    = 1_000    # steps avant le premier update
 SB3_EXPLORATION_FRAC   = 0.3      # fraction des timesteps pour décroître epsilon
 
