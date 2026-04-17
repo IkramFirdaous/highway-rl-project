@@ -1,5 +1,4 @@
 import random
-import numpy as np
 import torch
 import torch.nn as nn
 from core.dqn_model_cnn import DQN
@@ -12,25 +11,18 @@ from core.config import (
 
 class DQNAgent:
     def __init__(self):
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print("DEVICE: ", self.device)
-        self.policy_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
-        self.target_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
-        
-        self.gamma           = GAMMA
-        self.batch_size      = BATCH_SIZE
-        self.target_update   = TARGET_UPDATE
-        self.n_actions       = N_ACTIONS
-        self.steps           = 0
-        self.device  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"Device: {self.device}")
-        self.policy_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
-        self.target_net = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
+        self.gamma         = GAMMA
+        self.batch_size    = BATCH_SIZE
+        self.target_update = TARGET_UPDATE
+        self.n_actions     = N_ACTIONS
+        self.steps         = 0
+        self.device        = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.policy_net    = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
+        self.target_net    = DQN(OBS_SHAPE, N_ACTIONS).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
-
-        self.optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=LR)
-        self.buffer    = ReplayBuffer(BUFFER_SIZE)
+        self.optimizer     = torch.optim.Adam(self.policy_net.parameters(), lr=LR)
+        self.buffer        = ReplayBuffer(BUFFER_SIZE)
 
     def select_action(self, state, epsilon):
         if random.random() < epsilon:

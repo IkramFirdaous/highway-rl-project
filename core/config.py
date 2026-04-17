@@ -39,18 +39,18 @@ LR            = 5e-4
 GAMMA         = 0.99
 BUFFER_SIZE   = 50_000
 BATCH_SIZE    = 128
-TARGET_UPDATE = 500   # steps entre chaque sync target network
+TARGET_UPDATE = 500
 
 # ─── Hyperparamètres DQN scratch uniquement ──────────────────────────────────
 
 EPS_START     = 1.0
 EPS_END       = 0.05
-EPS_DECAY     = 0.99  # par épisode — atteint EPS_END vers ep ~300
+EPS_DECAY     = 0.99
 N_EPISODES    = 2000
 
 # ─── Hyperparamètres SB3 uniquement ──────────────────────────────────────────
 
-SB3_TIMESTEPS          = 40_000   # ~500 épisodes × 30 steps = budget équivalent DQN
+SB3_TIMESTEPS          = 40_000
 SB3_LEARNING_STARTS    = 1_000    # steps avant le premier update
 SB3_EXPLORATION_FRAC   = 0.3      # fraction des timesteps pour décroître epsilon
 
@@ -61,7 +61,7 @@ EVAL_SEEDS    = [42, 43, 44]
 
 # ─── Dérivé de la config  ─────────────────
 
-N_FEATURES    = len(SHARED_CORE_CONFIG["observation"]["features"])   # 5
-N_VEHICLES    = SHARED_CORE_CONFIG["observation"]["vehicles_count"]  # 10
-OBS_SHAPE     = (N_VEHICLES, N_FEATURES)                             # (10, 5)
+N_FEATURES    = len(SHARED_CORE_CONFIG["observation"]["features"])
+N_VEHICLES    = SHARED_CORE_CONFIG["observation"]["vehicles_count"]
+OBS_SHAPE     = (N_VEHICLES, N_FEATURES)
 N_ACTIONS     = 5  # DiscreteMetaAction : LANE_LEFT, IDLE, LANE_RIGHT, FASTER, SLOWER

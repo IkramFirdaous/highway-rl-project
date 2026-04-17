@@ -1,0 +1,33 @@
+
+=== Evaluation (50 runs per model) ===
+Model                      Mean      Std   Runs
+------------------------------------------------
+dqn_seed42               18.500    8.177     50
+dqn_seed43               19.363    5.742     50
+dqn_seed44               21.780    0.891     50
+ddqn_seed42              16.332    5.805     50
+ddqn_seed43              16.319    9.763     50
+ddqn_seed44              16.951    6.618     50
+sb3_seed42               15.786    6.748     50
+sb3_seed43                7.587    4.845     50
+sb3_seed44               16.244    0.281     50
+
+DQN avg                  19.881
+
+DDQN avg                 16.534
+
+SB3 avg                  13.206
+
+
+=== Evaluation (50 runs per model) ===
+Model                      Mean      Std   Runs
+------------------------------------------------
+dqn_seed43               19.363    5.742     50
+ddqn_seed43              16.319    9.763     50
+sb3_seed43               10.487    4.280     50
+
+DQN avg                  19.363
+
+DDQN avg                 16.319
+
+SB3 avg                  10.487

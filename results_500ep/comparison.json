@@ -1,0 +1,47 @@
+{
+  "dqn_seed42": {
+    "mean": 18.5004,
+    "std": 8.1767,
+    "n_runs": 50
+  },
+  "dqn_seed43": {
+    "mean": 19.3632,
+    "std": 5.7419,
+    "n_runs": 50
+  },
+  "dqn_seed44": {
+    "mean": 21.7802,
+    "std": 0.8914,
+    "n_runs": 50
+  },
+  "ddqn_seed42": {
+    "mean": 16.3318,
+    "std": 5.8054,
+    "n_runs": 50
+  },
+  "ddqn_seed43": {
+    "mean": 16.3187,
+    "std": 9.7628,
+    "n_runs": 50
+  },
+  "ddqn_seed44": {
+    "mean": 16.9513,
+    "std": 6.6177,
+    "n_runs": 50
+  },
+  "sb3_seed42": {
+    "mean": 15.7863,
+    "std": 6.7479,
+    "n_runs": 50
+  },
+  "sb3_seed43": {
+    "mean": 10.4874,
+    "std": 4.2802,
+    "n_runs": 50
+  },
+  "sb3_seed44": {
+    "mean": 16.244,
+    "std": 0.2811,
+    "n_runs": 50
+  }
+}
